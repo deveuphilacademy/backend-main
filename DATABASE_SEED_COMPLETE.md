@@ -101,10 +101,6 @@ All existing cosmetics/electronics/fashion products from the old database have b
 
 ## 🔗 Database Connection
 
-**MongoDB URI:**
-```
-mongodb+srv://deveuphilacademy_db_user:XalPUSlCURlDE5tI@euphilfoods.jh3cqhe.mongodb.net/?appName=euphilfoods
-```
 
 **Status:** ✅ Connected Successfully
 
