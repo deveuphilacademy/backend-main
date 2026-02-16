@@ -69,6 +69,70 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       required: true,
+      enum: ['paystack', 'flutterwave', 'bank-transfer', 'COD', 'cash-on-delivery', 'card'],
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'paid', 'failed', 'verifying', 'rejected'],
+      default: 'pending',
+      lowercase: true
+    },
+    paymentReference: {
+      type: String,
+      required: false,
+      unique: true,
+      sparse: true // Allows multiple null values
+    },
+    paymentVerifiedAt: {
+      type: Date,
+      required: false
+    },
+    paymentProof: {
+      imageUrl: {
+        type: String,
+        required: false
+      },
+      uploadedAt: {
+        type: Date,
+        required: false
+      },
+      verifiedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin',
+        required: false
+      },
+      verifiedAt: {
+        type: Date,
+        required: false
+      },
+      rejectionReason: {
+        type: String,
+        required: false,
+        maxLength: [500, "Rejection reason is too long"]
+      }
+    },
+    bankTransferDetails: {
+      accountName: {
+        type: String,
+        required: false
+      },
+      accountNumber: {
+        type: String,
+        required: false
+      },
+      bankName: {
+        type: String,
+        required: false
+      },
+      transferDate: {
+        type: Date,
+        required: false
+      },
+      amount: {
+        type: Number,
+        required: false,
+        min: [0, "Amount can't be negative"]
+      }
     },
     orderNote: {
       type: String,
@@ -80,7 +144,7 @@ const orderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "processing", "delivered",'cancel'],
+      enum: ["pending", "processing", "delivered", 'cancel'],
       lowercase: true,
     },
   },
@@ -88,6 +152,12 @@ const orderSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Indexes for performance optimization
+orderSchema.index({ paymentStatus: 1, createdAt: -1 }); // For pending payment queries
+orderSchema.index({ paymentReference: 1 }); // For payment verification lookups
+orderSchema.index({ user: 1, status: 1 }); // For user order history
+orderSchema.index({ status: 1, createdAt: -1 }); // For admin order management
 
 // define pre-save middleware to generate the invoice number
 orderSchema.pre('save', async function (next) {

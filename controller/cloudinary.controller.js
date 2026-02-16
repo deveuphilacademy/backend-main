@@ -1,8 +1,9 @@
 const fs = require("fs");
 const { cloudinaryServices } = require("../services/cloudinary.service");
+const Order = require("../model/Order");
 
 // add image
-const saveImageCloudinary = async (req, res,next) => {
+const saveImageCloudinary = async (req, res, next) => {
   // console.log(req.file)
   try {
     const result = await cloudinaryServices.cloudinaryImageUpload(
@@ -11,7 +12,7 @@ const saveImageCloudinary = async (req, res,next) => {
     res.status(200).json({
       success: true,
       message: "image uploaded successfully",
-      data:{url:result.secure_url,id:result.public_id},
+      data: { url: result.secure_url, id: result.public_id },
     });
   } catch (err) {
     console.log(err);
@@ -46,9 +47,9 @@ const addMultipleImageCloudinary = async (req, res) => {
       data:
         uploadResults.length > 0
           ? uploadResults.map((res) => ({
-              url: res.secure_url,
-              id: res.public_id,
-            }))
+            url: res.secure_url,
+            id: res.public_id,
+          }))
           : [],
     });
   } catch (err) {
@@ -79,8 +80,99 @@ const cloudinaryDeleteController = async (req, res) => {
   }
 };
 
+// upload payment proof
+const uploadPaymentProof = async (req, res, next) => {
+  try {
+    const { orderId, accountName, accountNumber, bankName, transferDate, amount } = req.body;
+
+    // Validate required fields
+    if (!orderId) {
+      return res.status(400).json({
+        success: false,
+        message: "Order ID is required",
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment proof image is required",
+      });
+    }
+
+    // Find order
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // specific validation: only for bank-transfer
+    if (order.paymentMethod !== 'bank-transfer') {
+      return res.status(400).json({
+        success: false,
+        message: "This order is not a bank transfer order",
+      });
+    }
+
+    // Verify ownership or admin role
+    const isOwner = order.user.toString() === req.user._id;
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to upload proof for this order",
+      });
+    }
+
+    // Prevent status regression
+    if (['paid', 'rejected', 'failed'].includes(order.paymentStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot upload proof for order with status: ${order.paymentStatus}`,
+      });
+    }
+
+    // Upload to Cloudinary
+    const result = await cloudinaryServices.cloudinaryPaymentProofUpload(req.file.buffer);
+
+    // Update order
+    order.paymentProof = {
+      imageUrl: result.secure_url,
+      uploadedAt: new Date(),
+    };
+
+    // Update bank transfer details if provided
+    if (accountName || accountNumber || bankName || transferDate || amount) {
+      order.bankTransferDetails = {
+        accountName,
+        accountNumber,
+        bankName,
+        transferDate,
+        amount
+      };
+    }
+
+    order.paymentStatus = 'verifying';
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Payment proof uploaded successfully",
+      data: order,
+    });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
 exports.cloudinaryController = {
   cloudinaryDeleteController,
   saveImageCloudinary,
   addMultipleImageCloudinary,
+  uploadPaymentProof,
 };

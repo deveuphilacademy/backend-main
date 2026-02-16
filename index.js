@@ -22,6 +22,7 @@ const adminRoutes = require("./routes/admin.routes");
 const customerRoutes = require("./routes/customer.routes");
 // const uploadRouter = require('./routes/uploadFile.route');
 const cloudinaryRoutes = require("./routes/cloudinary.routes");
+const paymentRoutes = require("./routes/payment.routes");
 
 // middleware
 app.use(cors());
@@ -44,6 +45,7 @@ app.use("/api/review", reviewRoutes);
 app.use("/api/cloudinary", cloudinaryRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/customer", customerRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // root route
 app.get("/", (req, res) => res.send("Apps worked successfully"));

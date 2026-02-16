@@ -3,25 +3,26 @@ const stripe = require("stripe")(secret.stripe_key);
 const Order = require("../model/Order");
 
 // create-payment-intent
-exports.paymentIntent = async (req, res, next) => {
-  try {
-    const product = req.body;
-    const price = Number(product.price);
-    const amount = price * 100;
-    // Create a PaymentIntent with the order amount and currency
-    const paymentIntent = await stripe.paymentIntents.create({
-      currency: "usd",
-      amount: amount,
-      payment_method_types: ["card"],
-    });
-    res.send({
-      clientSecret: paymentIntent.client_secret,
-    });
-  } catch (error) {
-    console.log(error);
-    next(error)
-  }
-};
+// DEPRECATED: Replaced by payment.controller.js
+// exports.paymentIntent = async (req, res, next) => {
+//   try {
+//     const product = req.body;
+//     const price = Number(product.price);
+//     const amount = price * 100;
+//     // Create a PaymentIntent with the order amount and currency
+//     const paymentIntent = await stripe.paymentIntents.create({
+//       currency: "usd",
+//       amount: amount,
+//       payment_method_types: ["card"],
+//     });
+//     res.send({
+//       clientSecret: paymentIntent.client_secret,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     next(error)
+//   }
+// };
 // addOrder
 exports.addOrder = async (req, res, next) => {
   try {

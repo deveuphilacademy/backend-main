@@ -43,6 +43,37 @@ const cloudinaryImageUpload = (imageBuffer) => {
   });
 };
 
+const cloudinaryPaymentProofUpload = (imageBuffer) => {
+  return new Promise((resolve, reject) => {
+    const uploadOptions = {
+      folder: 'euphil-foods-payment-proofs',
+      resource_type: 'auto',
+    };
+
+    if (secret.cloudinary_upload_preset) {
+      uploadOptions.upload_preset = secret.cloudinary_upload_preset;
+    }
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      uploadOptions,
+      (error, result) => {
+        if (error) {
+          console.error('Error uploading payment proof to Cloudinary:', error);
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+
+    const bufferStream = new Readable();
+    bufferStream.push(imageBuffer);
+    bufferStream.push(null);
+
+    bufferStream.pipe(uploadStream);
+  });
+};
+
 
 // cloudinaryImageDelete
 const cloudinaryImageDelete = async (public_id) => {
@@ -53,4 +84,5 @@ const cloudinaryImageDelete = async (public_id) => {
 exports.cloudinaryServices = {
   cloudinaryImageDelete,
   cloudinaryImageUpload,
+  cloudinaryPaymentProofUpload,
 };

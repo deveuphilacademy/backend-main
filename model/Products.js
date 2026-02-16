@@ -137,11 +137,68 @@ const productsSchema = mongoose.Schema({
     type: Number,
     default: 0,
     min: 0
-  }
+  },
+  lowStockThreshold: {
+    type: Number,
+    required: false,
+    default: 10,
+    min: [0, "Low stock threshold can't be negative"]
+  },
+  reorderPoint: {
+    type: Number,
+    required: false,
+    default: 5,
+    min: [0, "Reorder point can't be negative"]
+  },
+  reorderQuantity: {
+    type: Number,
+    required: false,
+    min: [0, "Reorder quantity can't be negative"]
+  },
+  lastRestocked: {
+    type: Date,
+    required: false
+  },
+  stockHistory: [{
+    quantity: {
+      type: Number,
+      required: true
+    },
+    action: {
+      type: String,
+      required: true,
+      enum: ['sale', 'restock', 'adjustment', 'return', 'cancelled-order'],
+      lowercase: true
+    },
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order',
+      required: false
+    },
+    adminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Admin',
+      required: false
+    },
+    note: {
+      type: String,
+      required: false,
+      maxLength: [500, "Note is too long"]
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now,
+      required: true
+    }
+  }]
 }, {
   timestamps: true,
 })
 
+// Indexes for performance optimization
+productsSchema.index({ quantity: 1, status: 1 }); // For low stock queries
+productsSchema.index({ 'category.id': 1, status: 1 }); // For category-based inventory
+productsSchema.index({ 'brand.id': 1, status: 1 }); // For brand-based inventory
 
 const Products = mongoose.model('Products', productsSchema)
 
