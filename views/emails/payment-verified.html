@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Verified</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #27ae60;
+            margin: 0;
+        }
+
+        .content {
+            margin-bottom: 20px;
+        }
+
+        .success-box {
+            background: #eafaf1;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #27ae60;
+            margin: 20px 0;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-table th {
+            background: #f8f9fa;
+        }
+
+        .shipping-info {
+            background: #f4f6f7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.8em;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Payment Verified!</h1>
+        </div>
+        <div class="content">
+            <p>Hello {{name}},</p>
+            <p>Great news! Your payment for order <strong>#{{invoice}}</strong> has been successfully verified.</p>
+
+            <div class="success-box">
+                <p>Your order is now being processed and will be shipped soon.</p>
+            </div>
+
+            <h3>Order Details</h3>
+            {{cartItems}}
+            <p><strong>Total Amount paid:</strong> ₦{{totalAmount}}</p>
+
+            <div class="shipping-info">
+                <h3>Shipping Address</h3>
+                <p>{{address}}</p>
+            </div>
+
+            <p>We'll notify you as soon as your order has been dispatched.</p>
+
+            <div class="cta-container" style="text-align: center; margin: 30px 0;">
+                <a href="{{trackingUrl}}" class="cta-button"
+                    style="background: #27ae60; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Track
+                    Your Order</a>
+            </div>
+
+            <p>Thank you for shopping with us!</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Your Business Name. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+
+</html>

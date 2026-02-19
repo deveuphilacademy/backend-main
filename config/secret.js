@@ -42,4 +42,5 @@ module.exports.secret = {
   // Webhook Secrets
   flw_webhook_hash: process.env.FLW_WEBHOOK_HASH,
   admin_notification_email: process.env.ADMIN_NOTIFICATION_EMAIL,
+  redis_url: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
 }

@@ -8,7 +8,7 @@ const productsSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  img:{
+  img: {
     type: String,
     required: true,
     validate: [validator.isURL, "Please provide valid url(s)"]
@@ -30,34 +30,34 @@ const productsSchema = mongoose.Schema({
     required: true,
   },
   imageURLs: [{
-    color:{
-      name:{
+    color: {
+      name: {
         type: String,
         required: false,
         trim: true,
       },
-      clrCode:{
+      clrCode: {
         type: String,
         required: false,
         trim: true,
       }
     },
-    img:{
+    img: {
       type: String,
       required: false,
       validate: [validator.isURL, "Please provide valid url(s)"]
     },
-    sizes:[String]
+    sizes: [String]
   }],
-  parent:{
-    type:String,
-    required:true,
-    trim:true,
-   },
-  children:{
-    type:String,
-    required:true,
-    trim:true,
+  parent: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  children: {
+    type: String,
+    required: true,
+    trim: true,
   },
   price: {
     type: Number,
@@ -104,9 +104,9 @@ const productsSchema = mongoose.Schema({
     },
     default: "in-stock",
   },
-  reviews: [{type:ObjectId, ref: 'Reviews' }],
-  productType:{
-    type:String,
+  reviews: [{ type: ObjectId, ref: 'Reviews' }],
+  productType: {
+    type: String,
     required: true,
     lowercase: true,
   },
@@ -121,12 +121,12 @@ const productsSchema = mongoose.Schema({
   additionalInformation: [{}],
   tags: [String],
   sizes: [String],
-  offerDate:{
-    startDate:{
-      type:Date
+  offerDate: {
+    startDate: {
+      type: Date
     },
-    endDate:{
-      type:Date
+    endDate: {
+      type: Date
     },
   },
   featured: {
@@ -189,6 +189,19 @@ const productsSchema = mongoose.Schema({
       type: Date,
       default: Date.now,
       required: true
+    }
+  }],
+  notifyList: [{
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+      validate: [validator.isEmail, "Please provide a valid email"]
+    },
+    addedAt: {
+      type: Date,
+      default: Date.now
     }
   }]
 }, {

@@ -24,6 +24,7 @@ const customerRoutes = require("./routes/customer.routes");
 const cloudinaryRoutes = require("./routes/cloudinary.routes");
 const paymentRoutes = require("./routes/payment.routes");
 const notificationRoutes = require("./routes/notification.routes");
+const analyticsRoutes = require("./routes/analytics.routes");
 
 // middleware
 app.use(cors());
@@ -36,6 +37,10 @@ connectDB().then(() => {
   // Start cron jobs
   require('./jobs/stockAlertJob');
   console.log('Stock alert job registered');
+
+  // Initialize Email Queue Worker
+  require('./jobs/email.queue');
+  console.log('Email queue worker initialized');
 });
 
 app.use("/api/user", userRoutes);
@@ -52,6 +57,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/customer", customerRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // root route
 app.get("/", (req, res) => res.send("Apps worked successfully"));

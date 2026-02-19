@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Proof Received</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .content {
+            margin-bottom: 20px;
+        }
+
+        .status-box {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.8em;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Payment Proof Received</h1>
+        </div>
+        <div class="content">
+            <p>Hello {{name}},</p>
+            <p>We've received your payment proof for order <strong>#{{invoice}}</strong>.</p>
+
+            <div class="status-box">
+                <p><strong>Order ID:</strong> #{{invoice}}</p>
+                <p><strong>Total Amount:</strong> ₦{{totalAmount}}</p>
+                <p><strong>Status:</strong> Verifying Payment</p>
+            </div>
+
+            <p>Our team is now reviewing your payment. You will receive another email once your payment has been
+                verified and your order starts processing.</p>
+            <p>Verification usually takes between 1-6 hours during business hours.</p>
+
+            <div class="cta-container" style="text-align: center; margin: 30px 0;">
+                <a href="{{trackingUrl}}" class="cta-button"
+                    style="background: #3498db; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Track
+                    Order Status</a>
+            </div>
+
+            <p>Thank you for your patience!</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Your Business Name. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+
+</html>

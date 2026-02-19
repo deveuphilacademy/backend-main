@@ -1,6 +1,6 @@
 const Notification = require("../model/Notification");
 const Admin = require("../model/Admin");
-const { sendEmailStandalone } = require("../config/email");
+const emailService = require("./email.service");
 const { secret } = require("../config/secret");
 
 /**
@@ -59,40 +59,8 @@ exports.createStockAlert = async (product, type) => {
  * @param {Array} admins - List of admin objects.
  */
 exports.sendLowStockEmail = async (product, admins) => {
-    const adminEmails = admins.map(a => a.email).join(', ');
-    const recipient = secret.admin_notification_email || adminEmails;
-
-    const body = {
-        from: secret.email_user,
-        to: recipient,
-        subject: `Low Stock Alert: ${product.title}`,
-        html: `
-            <div style="font-family: sans-serif; padding: 20px;">
-                <h3 style="color: #333;">Low Stock Alert</h3>
-                <p>Hello Admin,</p>
-                <p>The following product has reached its low stock threshold:</p>
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Product Name</strong></td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${product.title}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Current Quantity</strong></td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${product.quantity}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Low Stock Threshold</strong></td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${product.lowStockThreshold}</td>
-                    </tr>
-                </table>
-                <p>Please consider restocking soon.</p>
-                <p>Regards,<br/>Inventory Management System</p>
-            </div>
-        `
-    };
-
     try {
-        await sendEmailStandalone(body);
+        await emailService.sendStockAlert(product, 'low-stock');
     } catch (error) {
         console.error("Failed to send low stock email:", error);
     }
@@ -104,36 +72,8 @@ exports.sendLowStockEmail = async (product, admins) => {
  * @param {Array} admins - List of admin objects.
  */
 exports.sendOutOfStockEmail = async (product, admins) => {
-    const adminEmails = admins.map(a => a.email).join(', ');
-    const recipient = secret.admin_notification_email || adminEmails;
-
-    const body = {
-        from: secret.email_user,
-        to: recipient,
-        subject: `URGENT: Out of Stock Alert: ${product.title}`,
-        html: `
-            <div style="font-family: sans-serif; padding: 20px;">
-                <h2 style="color: #d9534f;">Out of Stock Alert</h2>
-                <p>Hello Admin,</p>
-                <p>The following product is now <strong>OUT OF STOCK</strong>:</p>
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Product Name</strong></td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${product.title}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Status</strong></td>
-                        <td style="padding: 8px; border: 1px solid #ddd; color: #d9534f; font-weight: bold;">Out of Stock</td>
-                    </tr>
-                </table>
-                <p>Customers will no longer be able to purchase this item until it is restocked.</p>
-                <p>Regards,<br/>Inventory Management System</p>
-            </div>
-        `
-    };
-
     try {
-        await sendEmailStandalone(body);
+        await emailService.sendStockAlert(product, 'out-of-stock');
     } catch (error) {
         console.error("Failed to send out of stock email:", error);
     }
@@ -168,12 +108,11 @@ exports.checkAndNotifyLowStock = async () => {
             // Create in-app notification
             await exports.createStockAlert(product, type);
 
-            // Send email notification
-            if (type === 'out-of-stock') {
-                await exports.sendOutOfStockEmail(product, admins);
-            } else {
-                await exports.sendLowStockEmail(product, admins);
-            }
+            // Send email notification (Fire-and-forget)
+            setImmediate(() => {
+                emailService.sendStockAlert(product, type)
+                    .catch(err => console.error(`Error sending stock alert for ${product.title}:`, err));
+            });
         }
     } catch (error) {
         console.error("Error in checkAndNotifyLowStock job:", error);

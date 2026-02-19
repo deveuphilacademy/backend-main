@@ -1,5 +1,7 @@
 require('dotenv').config();
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 const { secret } = require('./secret');
 
 // sendEmail
@@ -63,3 +65,21 @@ module.exports.sendEmailStandalone = (body) => {
   });
 };
 
+// renderTemplate
+module.exports.renderTemplate = (templateName, variables) => {
+  const templatePath = path.join(__dirname, '..', 'views', 'emails', `${templateName}.html`);
+  if (!fs.existsSync(templatePath)) {
+    console.error(`Template not found: ${templatePath}`);
+    return '';
+  }
+
+  let template = fs.readFileSync(templatePath, 'utf8');
+
+  Object.keys(variables).forEach((key) => {
+    const placeholder = `{{${key}}}`;
+    // Global replacement for all occurrences
+    template = template.split(placeholder).join(variables[key] || '');
+  });
+
+  return template;
+};

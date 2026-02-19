@@ -92,6 +92,34 @@ exports.restoreStock = async (productId, quantity, orderId) => {
         { new: true }
     );
 
+    // Handle restock notifications (transition from out-of-stock to in-stock)
+    if (statusUpdate === "in-stock" && product.status === "out-of-stock" && updatedProduct.notifyList.length > 0) {
+        try {
+            const { sendEmailStandalone } = require("../config/email");
+            const notifications = updatedProduct.notifyList.map(item => ({
+                from: process.env.EMAIL_USER,
+                to: item.email,
+                subject: `Restock Alert: ${updatedProduct.title} is back in stock!`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; color: #333;">
+                        <h2>Good news!</h2>
+                        <p>The product you were waiting for, <strong>${updatedProduct.title}</strong>, is now back in stock.</p>
+                        <p>Quantity available: ${updatedProduct.quantity}</p>
+                        <a href="${process.env.STORE_URL}/product/${updatedProduct._id}" style="display: inline-block; padding: 10px 20px; background-color: #0171e2; color: #fff; text-decoration: none; border-radius: 5px;">Shop Now</a>
+                    </div>
+                `
+            }));
+
+            // Send emails in batches or sequentially
+            await Promise.allSettled(notifications.map(mailOptions => sendEmailStandalone(mailOptions)));
+
+            // Clear notify list after sending
+            await Products.findByIdAndUpdate(productId, { $set: { notifyList: [] } });
+        } catch (error) {
+            console.error("Failed to send restock notifications in restoreStock:", error);
+        }
+    }
+
     return updatedProduct;
 };
 
@@ -145,6 +173,34 @@ exports.adjustStock = async (productId, quantity, action, adminId, note) => {
     const updatedProduct = await Products.findByIdAndUpdate(productId, updateObj, {
         new: true,
     });
+
+    // Handle restock notifications
+    if (statusUpdate === "in-stock" && product.status === "out-of-stock" && updatedProduct.notifyList.length > 0) {
+        try {
+            const { sendEmailStandalone } = require("../config/email");
+            const notifications = updatedProduct.notifyList.map(item => ({
+                from: process.env.EMAIL_USER,
+                to: item.email,
+                subject: `Restock Alert: ${updatedProduct.title} is back in stock!`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; color: #333;">
+                        <h2>Good news!</h2>
+                        <p>The product you were waiting for, <strong>${updatedProduct.title}</strong>, is now back in stock.</p>
+                        <p>Quantity available: ${updatedProduct.quantity}</p>
+                        <a href="${process.env.STORE_URL}/product/${updatedProduct._id}" style="display: inline-block; padding: 10px 20px; background-color: #0171e2; color: #fff; text-decoration: none; border-radius: 5px;">Shop Now</a>
+                    </div>
+                `
+            }));
+
+            // Send emails in batches or sequentially
+            await Promise.allSettled(notifications.map(mailOptions => sendEmailStandalone(mailOptions)));
+
+            // Clear notify list after sending
+            await Products.findByIdAndUpdate(productId, { $set: { notifyList: [] } });
+        } catch (error) {
+            console.error("Failed to send restock notifications:", error);
+        }
+    }
 
     return updatedProduct;
 };

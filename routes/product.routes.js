@@ -37,4 +37,7 @@ router.get('/:id/stock-history', verifyToken, authorization('Admin', 'Super Admi
 // delete product
 router.delete('/:id', productController.deleteProduct);
 
+// notify when available
+router.post("/:id/notify-me", productController.notifyWhenAvailable);
+
 module.exports = router;

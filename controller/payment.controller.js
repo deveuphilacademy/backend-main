@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const Order = require('../model/Order');
 const paymentServices = require('../services/payment.service');
 const { secret } = require('../config/secret');
+const emailService = require('../services/email.service');
 
 // Initialize Payment
 exports.initializePayment = async (req, res, next) => {
@@ -114,6 +115,13 @@ exports.verifyPayment = async (req, res, next) => {
             order.paymentProof = JSON.stringify(verificationData); // Store basic proof
             await order.save();
 
+            // Send Payment Verified Email (Fire-and-forget)
+            setImmediate(() => {
+                emailService.sendPaymentVerified(order)
+                    .then(() => console.log(`Payment verification email sent for order: ${order._id}`))
+                    .catch(err => console.error(`Error sending verification email for order ${order._id}:`, err));
+            });
+
             res.status(200).json({
                 success: true,
                 message: 'Payment verified successfully',
@@ -153,6 +161,12 @@ exports.paystackWebhook = async (req, res) => {
                         order.status = 'processing';
                         order.paymentVerifiedAt = new Date();
                         await order.save();
+
+                        // Send Payment Verified Email (Fire-and-forget)
+                        setImmediate(() => {
+                            emailService.sendPaymentVerified(order)
+                                .catch(err => console.error(`Error sending verification email (webhook) for order ${order._id}:`, err));
+                        });
                     }
                 }
             }
@@ -188,6 +202,12 @@ exports.flutterwaveWebhook = async (req, res) => {
                     order.status = 'processing';
                     order.paymentVerifiedAt = new Date();
                     await order.save();
+
+                    // Send Payment Verified Email (Fire-and-forget)
+                    setImmediate(() => {
+                        emailService.sendPaymentVerified(order)
+                            .catch(err => console.error(`Error sending verification email (webhook) for order ${order._id}:`, err));
+                    });
                 }
             }
         }
@@ -255,6 +275,13 @@ exports.uploadProof = async (req, res, next) => {
 
         await order.save();
 
+        // Send Payment Proof Received Email (Fire-and-forget)
+        setImmediate(() => {
+            emailService.sendPaymentProofReceived(order)
+                .then(() => console.log(`Payment proof received email sent for order: ${order._id}`))
+                .catch(err => console.error(`Error sending proof received email for order ${order._id}:`, err));
+        });
+
         res.status(200).json({
             success: true,
             message: 'Payment proof uploaded successfully',
@@ -316,6 +343,17 @@ exports.verifyProof = async (req, res, next) => {
         }
 
         await order.save();
+
+        // Send Status-specific Email (Fire-and-forget)
+        setImmediate(() => {
+            const emailPromise = action === 'approve'
+                ? emailService.sendPaymentVerified(order)
+                : emailService.sendPaymentRejected(order);
+
+            emailPromise
+                .then(() => console.log(`Payment ${action} email sent for order: ${order._id}`))
+                .catch(err => console.error(`Error sending payment ${action} email for order ${order._id}:`, err));
+        });
 
         res.status(200).json({
             success: true,

@@ -237,3 +237,52 @@ exports.getLowStockProducts = async (req, res, next) => {
   }
 };
 
+// notify when available
+exports.notifyWhenAvailable = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const productId = req.params.id;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    if (product.status !== "out-of-stock") {
+      return res.status(400).json({
+        success: false,
+        message: "Product is currently in stock",
+      });
+    }
+
+    // Check if email already in list
+    const isAlreadyNotified = product.notifyList.some(item => item.email === email);
+    if (isAlreadyNotified) {
+      return res.status(200).json({
+        success: true,
+        message: "You are already on the notification list for this product",
+      });
+    }
+
+    product.notifyList.push({ email });
+    await product.save();
+
+    res.status(200).json({
+      success: true,
+      message: "We'll email you when this product is back in stock!",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

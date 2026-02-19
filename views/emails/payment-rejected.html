@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Rejected</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #e74c3c;
+            margin: 0;
+        }
+
+        .content {
+            margin-bottom: 20px;
+        }
+
+        .error-box {
+            background: #fdedec;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.8em;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Payment Verification Failed</h1>
+        </div>
+        <div class="content">
+            <p>Hello {{name}},</p>
+            <p>We're sorry, but we could not verify your payment for order <strong>#{{invoice}}</strong>.</p>
+
+            <div class="error-box">
+                <p><strong>Rejection Reason:</strong> {{rejectionReason}}</p>
+            </div>
+
+            <p>Please double-check your payment information and try uploading a clear proof of payment again, or contact
+                our support team at {{supportEmail}} for assistance.</p>
+
+            <div class="cta-container" style="text-align: center; margin: 30px 0;">
+                <a href="{{trackingUrl}}" class="cta-button"
+                    style="background: #e74c3c; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">View
+                    Order Details</a>
+            </div>
+
+            <p>Your order is currently on hold until payment is confirmed.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Your Business Name. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+
+</html>

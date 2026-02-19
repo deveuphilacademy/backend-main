@@ -1,6 +1,7 @@
 const Order = require("../model/Order");
 const Product = require("../model/Products");
 const inventoryService = require("../services/inventory.service");
+const emailService = require("../services/email.service");
 
 // addOrder
 exports.addOrder = async (req, res, next) => {
@@ -40,6 +41,15 @@ exports.addOrder = async (req, res, next) => {
       } catch (stockError) {
         console.error(`Failed to reduce stock for ${item._id}:`, stockError);
       }
+    }
+
+    // 4. Send Order Confirmation Email (Fire-and-forget)
+    if (orderItems.paymentMethod === 'bank-transfer') {
+      setImmediate(() => {
+        emailService.sendOrderConfirmation(orderItems)
+          .then(() => console.log(`Order confirmation email sent for order: ${orderItems._id}`))
+          .catch(err => console.error(`Error sending confirmation email for order ${orderItems._id}:`, err));
+      });
     }
 
     res.status(200).json({
