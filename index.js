@@ -23,6 +23,7 @@ const customerRoutes = require("./routes/customer.routes");
 // const uploadRouter = require('./routes/uploadFile.route');
 const cloudinaryRoutes = require("./routes/cloudinary.routes");
 const paymentRoutes = require("./routes/payment.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 // middleware
 app.use(cors());
@@ -31,7 +32,11 @@ app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // connect database
-connectDB();
+connectDB().then(() => {
+  // Start cron jobs
+  require('./jobs/stockAlertJob');
+  console.log('Stock alert job registered');
+});
 
 app.use("/api/user", userRoutes);
 app.use("/api/category", categoryRoutes);
@@ -46,6 +51,7 @@ app.use("/api/cloudinary", cloudinaryRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/customer", customerRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // root route
 app.get("/", (req, res) => res.send("Apps worked successfully"));

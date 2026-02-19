@@ -12,15 +12,15 @@ module.exports = async (req, res, next) => {
   try {
     const token = req.headers?.authorization?.split(" ")?.[1];
 
-    if(!token){
+    if (!token) {
       return res.status(401).json({
         status: "fail",
         error: "You are not logged in"
       });
     }
-    
-    const decoded = await promisify(jwt.verify)(token,secret.token_secret);
 
+    const decoded = await promisify(jwt.verify)(token, secret.token_secret);
+    console.log('Token Verified as:', decoded.name, 'Role:', decoded.role);
     req.user = decoded;
 
     next();

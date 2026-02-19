@@ -39,3 +39,27 @@ module.exports.sendEmail = (body, res, message) => {
   });
 };
 
+// sendEmailStandalone
+module.exports.sendEmailStandalone = (body) => {
+  return new Promise((resolve, reject) => {
+    const transporter = nodemailer.createTransport({
+      host: secret.email_host,
+      service: secret.email_service,
+      port: secret.email_port,
+      secure: true,
+      auth: {
+        user: secret.email_user,
+        pass: secret.email_pass,
+      },
+    });
+
+    transporter.sendMail(body, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+};
+

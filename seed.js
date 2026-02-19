@@ -26,7 +26,6 @@ const reviewsData = require('./utils/reviews');
 const Admin = require('./model/Admin');
 const adminData = require('./utils/admin');
 
-connectDB();
 const importData = async () => {
   try {
     await Brand.deleteMany();
@@ -40,16 +39,16 @@ const importData = async () => {
 
     await Coupon.deleteMany();
     await Coupon.insertMany(couponData);
-    
+
     await Order.deleteMany();
     await Order.insertMany(orderData);
-    
+
     await User.deleteMany();
     await User.insertMany(userData);
-    
+
     await Reviews.deleteMany();
     await Reviews.insertMany(reviewsData);
-    
+
     await Admin.deleteMany();
     await Admin.insertMany(adminData);
 
@@ -61,4 +60,11 @@ const importData = async () => {
   }
 };
 
-importData();
+const run = async () => {
+  console.log('Connecting to database...');
+  await connectDB();
+  console.log('Starting data import...');
+  await importData();
+};
+
+run();

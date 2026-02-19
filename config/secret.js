@@ -41,4 +41,5 @@ module.exports.secret = {
 
   // Webhook Secrets
   flw_webhook_hash: process.env.FLW_WEBHOOK_HASH,
+  admin_notification_email: process.env.ADMIN_NOTIFICATION_EMAIL,
 }

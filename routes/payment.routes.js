@@ -30,9 +30,9 @@ router.get('/bank-details', getBankDetails);
 router.post('/upload-proof', uploadProof);
 
 // Admin verifies payment proof
-router.post('/verify-proof', verifyToken, authorization('admin'), verifyProof);
+router.post('/verify-proof', verifyToken, authorization('Admin', 'Super Admin', 'Manager', 'CEO'), verifyProof);
 
 // Admin gets pending verifications
-router.get('/pending-verifications', verifyToken, authorization('admin'), getPendingVerifications);
+router.get('/pending-verifications', verifyToken, authorization('Admin', 'Super Admin', 'Manager', 'CEO'), getPendingVerifications);
 
 module.exports = router;

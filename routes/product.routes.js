@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const verifyToken = require('../middleware/verifyToken');
+const authorization = require('../middleware/authorization');
 // internal
 const productController = require('../controller/product.controller');
 
@@ -26,8 +28,13 @@ router.get("/stock-out", productController.stockOutProducts);
 // get Single Product
 router.patch("/edit-product/:id", productController.updateProduct);
 // get Products ByType
+router.get("/low-stock", verifyToken, authorization('Admin', 'Super Admin', 'Manager', 'CEO'), productController.getLowStockProducts);
 router.get('/:type', productController.getProductsByType);
-// get Products ByType 
+// adjust stock
+router.post('/:id/adjust-stock', verifyToken, authorization('Admin', 'Super Admin', 'Manager', 'CEO'), productController.adjustStock);
+// stock history
+router.get('/:id/stock-history', verifyToken, authorization('Admin', 'Super Admin', 'Manager', 'CEO'), productController.getStockHistory);
+// delete product
 router.delete('/:id', productController.deleteProduct);
 
 module.exports = router;

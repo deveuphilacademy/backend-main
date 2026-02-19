@@ -4,7 +4,7 @@ const {
   getCustomerById,
   updateCustomer
 } = require('../controller/customer.controller')
-const { isAuth } = require('../middleware/auth')
+const { isAuth } = require('../config/auth')
 
 // GET /api/customer/all - Get all customers with order metrics
 router.get('/all', isAuth, getAllCustomers)
