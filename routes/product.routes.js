@@ -25,6 +25,8 @@ router.get('/related-product/:id', productController.getRelatedProducts);
 router.get("/single-product/:id", productController.getSingleProduct);
 // stock Product
 router.get("/stock-out", productController.stockOutProducts);
+// recent stock changes
+router.get("/stock-history/all", verifyToken, authorization('Admin', 'Super Admin', 'Manager', 'CEO'), productController.getRecentStockChanges);
 // get Single Product
 router.patch("/edit-product/:id", productController.updateProduct);
 // get Products ByType

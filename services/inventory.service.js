@@ -226,3 +226,29 @@ exports.getStockHistory = async (productId) => {
         "stockHistory title quantity status"
     );
 };
+
+/**
+ * Gets the most recent stock changes across all products.
+ * @returns {Promise<Array>} List of recent stock changes.
+ */
+exports.getRecentStockChanges = async () => {
+    const recentChanges = await Products.aggregate([
+        { $unwind: "$stockHistory" },
+        { $sort: { "stockHistory.timestamp": -1 } },
+        { $limit: 20 },
+        {
+            $project: {
+                _id: "$stockHistory._id", // Use stockHistory entry ID if available, or just ignore
+                productId: "$_id",
+                productName: "$title",
+                action: "$stockHistory.action",
+                quantity: "$stockHistory.quantity",
+                timestamp: "$stockHistory.timestamp",
+                note: "$stockHistory.note",
+                adminId: "$stockHistory.adminId",
+                orderId: "$stockHistory.orderId",
+            }
+        }
+    ]);
+    return recentChanges;
+};

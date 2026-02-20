@@ -11,7 +11,7 @@ Shofy is a powerful and modern full stack eCommerce web application built using 
 - **Express.js:** Express.js is a minimal and flexible Node.js web application framework that offers a robust set of features for web and mobile applications.
 - **MongoDB:** MongoDB is a developer-friendly data platform that provides the services and tools necessary to build distributed applications at scale.
 - **Mongoose:** Mongoose provides a straightforward, schema-based solution to model your application data, offering built-in type casting, validation, and query building.
-- **Stripe:** Stripe offers online payment solutions, allowing you to create a secure and reliable website with e-commerce functionality.
+
 - **Nodemailer:** Nodemailer is a module for Node.js applications that facilitates easy email sending, keeping your users informed and engaged.
 - **Authentication:** Shofy includes features for Google login, user registration, email verification, forgot password, reset password, and profile updates.
 - **Redux Toolkit:** Manage state effortlessly with Redux Toolkit, providing a convenient and efficient way to handle state in your application.
@@ -29,7 +29,7 @@ Shofy is a powerful and modern full stack eCommerce web application built using 
 - **Express.js:** Create a robust backend for your eCommerce website using Express.js.
 - **MongoDB:** Store and retrieve data efficiently with the flexibility and scalability of MongoDB.
 - **Mongoose:** Model your application data effortlessly with Mongoose's schema-based solution.
-- **Stripe:** Integrate secure and reliable payment solutions into your online store.
+
 - **Nodemailer:** Keep your users informed with easy email sending capabilities.
 - **Authentication:** Enable secure user registration, login, and profile updates, including Google login option.
 - **Redux Toolkit:** Efficiently manage state in your application with Redux Toolkit.
@@ -63,39 +63,30 @@ Shofy is a powerful and modern full stack eCommerce web application built using 
 - **Quantity Select:** Provide users with two options for selecting product quantities: a dropdown select box or manual input for more flexibility.
 - **Google and Email Password-based Authentication:** Secure user accounts with authentication methods, including Google login and email-based password authentication.
 - **User Profile and Information Update:** Allow users to update their profile information, ensuring accurate and up-to-date data for future interactions.
-- **Powerful Payment Gateway Integration using Stripe:** Securely process payments with Stripe integration, providing a smooth and reliable shopping experience for customers.
 
-## Installation and Usage
 
-To get started with Shofy, follow these steps:
+## Environment Setup
 
-1. Clone the repository:
-
+1. Copy `.env.example` to `.env`:
    ```bash
-   https://github.com/Hamed-Hasan/shofy-Beauty-and-Cosmetics-ecommerce-backend.git
+   cp .env.example .env
    ```
+2. Fill in the variables in `.env`.
+   - **MongoDB**: MongoDB Atlas → Connect → Connection String.
+   - **Paystack**: [dashboard.paystack.com](https://dashboard.paystack.com) → Settings → API Keys.
+   - **Flutterwave**: [dashboard.flutterwave.com](https://dashboard.flutterwave.com) → Settings → API Keys.
+   - **Cloudinary**: [cloudinary.com/console](https://cloudinary.com/console) → Dashboard.
+   - **Email**: Gmail → Google Account → Security → App Passwords.
+   - **Redis**: Use [Upstash](https://upstash.com) free tier for serverless Redis (required for Bull email queue).
+3. **Note**:
+   - `REDIS_URL` is required for the email queue (Bull).
+   - `STORE_URL` and `ADMIN_URL` must be set to production Vercel URLs before deploying.
 
-2. Install dependencies:
+## Deployment (Vercel)
 
-   ```bash
-   npm install
-   ```
-
-3. Configure environment variables.
-
-4. Build the project:
-
-   ```bash
-   npm run build
-   ```
-
-5. Start the server:
-
-   ```bash
-   npm run dev
-   ```
-
-6. Access the application at the specified URL.
+1. Set all env vars from `.env.example` in Vercel Dashboard → Project → Settings → Environment Variables.
+2. Do **not** upload `.env` file — use Vercel's env var UI instead.
+3. Deploy the three Vercel projects: `backend-main`, `client-main`, and `shadcn-admin`.
 
 ## Client Side Live Link
 
